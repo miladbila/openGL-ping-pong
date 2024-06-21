@@ -17,46 +17,57 @@ GLfloat player1Y = 0.0f;
 GLfloat player2Y = 0.0f;
 int refreshMillis = 16;
 
+bool player1up = false;
+bool player1down = false;
+bool player2up = false;
+bool player2down = false;
+
+
+using namespace std;
 void drawBall() {
+	glPushMatrix();
+	glTranslatef(ballX, ballY, 0.0f);
 	glBegin(GL_TRIANGLE_FAN);
 	glColor3f(1.0f, 1.0f, 1.0f);
-
 	for (int i = 0; i <= 32; ++i) {
 		float angle = i * 2.0f * PI / 32;
 		glVertex2f(cos(angle) * ballRadius, sin(angle) * ballRadius);
 	}
-
 	glEnd();
+	glPopMatrix();
 }
 
 void player1() {
+	glPushMatrix();
+	glTranslatef(clipAreaXLeft, player1Y, 0.0f);
 	glBegin(GL_QUADS);
 	glColor3f(1.0f, 1.0f, 1.0f);
-	glVertex2f(clipAreaXLeft, 0.2);
-	glVertex2f(clipAreaXLeft, -0.2);
-	glVertex2f(clipAreaXLeft + 0.01, -0.2);
-	glVertex2f(clipAreaXLeft + 0.01, 0.2);
+	glVertex2f(0, 0.2);
+	glVertex2f(0, -0.2);
+	glVertex2f(0.01, -0.2);
+	glVertex2f(0.01, 0.2);
 	glEnd();
+	glPopMatrix();
 }
 
 void player2() {
+	glPushMatrix();
+	glTranslatef(clipAreaXRight - 0.01, player2Y, 0.0f);
 	glBegin(GL_QUADS);
 	glColor3f(1.0f, 1.0f, 1.0f);
-	glVertex2f(clipAreaXRight, 0.2);
-	glVertex2f(clipAreaXRight, -0.2);
-	glVertex2f(clipAreaXRight - 0.01, -0.2);
-	glVertex2f(clipAreaXRight - 0.01, 0.2);
+	glVertex2f(0, 0.2);
+	glVertex2f(0, -0.2);
+	glVertex2f(0.01, -0.2);
+	glVertex2f(0.01, 0.2);
 	glEnd();
+	glPopMatrix();
 }
 
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	glPushMatrix();
-	glTranslatef(ballX, ballY, 0.0f);
 	drawBall();
-	glPopMatrix();
 	player1();
 	player2();
 	glutSwapBuffers();
@@ -126,6 +137,69 @@ void init()
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 }
 
+void keyboard(unsigned char key, int x, int y) {
+	if (key == 'w') {
+		player1up = true;
+	}
+	else if (key == 's')
+	{
+		player1down = true;
+	}
+
+	if (key == 'o') {
+		player2up = true;
+	}
+	else if (key == 'l')
+	{
+		player2down = true;
+	}
+}
+
+void keyboardUp(unsigned char key, int x, int y) {
+	if (key == 'w') {
+		player1up = false;
+	}
+	else if (key == 's')
+	{
+		player1down = false;
+	}
+
+	if (key == 'o') {
+		player2up = false;
+	}
+	else if (key == 'l')
+	{
+		player2down = false;
+	}
+}
+
+void idle() {
+	if (player1up)
+	{
+		if (player1Y + 0.2 < clipAreaYTop) {
+			player1Y += 0.0000005;
+		}
+	}
+	if (player1down)
+	{
+		if (player1Y - 0.2 > clipAreaYBottom) {
+			player1Y -= 0.0000005;
+		}
+	}
+	if (player2up)
+	{
+		if (player2Y + 0.2 < clipAreaYTop) {
+			player2Y += 0.0000005;
+		}
+	}
+	if (player2down)
+	{
+		if (player2Y - 0.2 > clipAreaYBottom) {
+			player2Y -= 0.0000005;
+		}
+	}
+}
+
 int main(int argc, char* argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE);
@@ -135,6 +209,9 @@ int main(int argc, char* argv[]) {
 	glutDisplayFunc(display);
 	glutTimerFunc(0, timer, 0);
 	glutReshapeFunc(reshape);
+	glutKeyboardFunc(keyboard);
+	glutKeyboardUpFunc(keyboardUp);
+	glutIdleFunc(idle);
 	glutMainLoop();
 	return 0;
 }
