@@ -22,14 +22,27 @@ bool player1down = false;
 bool player2up = false;
 bool player2down = false;
 
+int player1Color = 0;
+int player2Color = 0;
+int ballColor = 0;
 
 using namespace std;
 void drawBall() {
 	glPushMatrix();
 	glTranslatef(ballX, ballY, 0.0f);
 	glBegin(GL_TRIANGLE_FAN);
-	glColor3f(1.0f, 1.0f, 1.0f);
-	for (int i = 0; i <= 32; ++i) {
+	switch (ballColor)
+	{
+	case 1:
+		glColor3f(0.0f, 0.0f, 1.0f);
+		break;
+	case 2:
+		glColor3f(1.0f, 0.0f, 0.0f);
+		break;
+	default:
+		glColor3f(1.0f, 1.0f, 1.0f);
+		break;
+	}	for (int i = 0; i <= 32; ++i) {
 		float angle = i * 2.0f * PI / 32;
 		glVertex2f(cos(angle) * ballRadius, sin(angle) * ballRadius);
 	}
@@ -41,7 +54,18 @@ void player1() {
 	glPushMatrix();
 	glTranslatef(clipAreaXLeft, player1Y, 0.0f);
 	glBegin(GL_QUADS);
-	glColor3f(1.0f, 1.0f, 1.0f);
+	switch (player1Color)
+	{
+	case 1:
+		glColor3f(0.0f, 0.0f, 1.0f);
+		break;
+	case 2:
+		glColor3f(1.0f, 0.0f, 0.0f);
+		break;
+	default:
+		glColor3f(1.0f, 1.0f, 1.0f);
+		break;
+	}
 	glVertex2f(0, 0.2);
 	glVertex2f(0, -0.2);
 	glVertex2f(0.01, -0.2);
@@ -54,8 +78,18 @@ void player2() {
 	glPushMatrix();
 	glTranslatef(clipAreaXRight - 0.01, player2Y, 0.0f);
 	glBegin(GL_QUADS);
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glVertex2f(0, 0.2);
+	switch (player2Color)
+	{
+	case 1:
+		glColor3f(0.0f, 0.0f, 1.0f);
+		break;
+	case 2:
+		glColor3f(1.0f, 0.0f, 0.0f);
+		break;
+	default:
+		glColor3f(1.0f, 1.0f, 1.0f);
+		break;
+	}	glVertex2f(0, 0.2);
 	glVertex2f(0, -0.2);
 	glVertex2f(0.01, -0.2);
 	glVertex2f(0.01, 0.2);
@@ -83,15 +117,34 @@ void display() {
 		ballY += ySpeed;
 	}
 	if ((ballX > ballXMax)) {
-
-		ballX = ballXMax;
-		xSpeed = -xSpeed;
-
+		if (ballY > player2Y + 0.2 || ballY < player2Y - 0.2)
+		{
+			ballX = 0;
+			ballY = 0;
+			player1Color = 1;
+			player2Color = 2;
+		}
+		else
+		{
+			ballX = ballXMax;
+			xSpeed = -xSpeed;
+			ballColor = player2Color;
+		}
 	}
 	else if ((ballX < ballXMin)) {
-
-		ballX = ballXMin;
-		xSpeed = -xSpeed;
+		if (ballY > player1Y + 0.2 || ballY < player1Y - 0.2)
+		{
+			ballX = 0;
+			ballY = 0;
+			player2Color = 1;
+			player1Color = 2;
+		}
+		else
+		{
+			ballX = ballXMin;
+			xSpeed = -xSpeed;
+			ballColor = player1Color;
+		}
 	}
 	else {
 		ballX += xSpeed;
