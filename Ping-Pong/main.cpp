@@ -13,6 +13,8 @@ GLfloat ballX = 0.1f;
 GLfloat ballY = 0.0f;
 GLfloat ySpeed = 0.01f;
 GLfloat xSpeed = 0.02f;
+GLfloat player1Y = 0.0f;
+GLfloat player2Y = 0.0f;
 int refreshMillis = 16;
 
 void drawBall() {
@@ -27,12 +29,36 @@ void drawBall() {
 	glEnd();
 }
 
+void player1() {
+	glBegin(GL_QUADS);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glVertex2f(clipAreaXLeft, 0.2);
+	glVertex2f(clipAreaXLeft, -0.2);
+	glVertex2f(clipAreaXLeft + 0.01, -0.2);
+	glVertex2f(clipAreaXLeft + 0.01, 0.2);
+	glEnd();
+}
+
+void player2() {
+	glBegin(GL_QUADS);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glVertex2f(clipAreaXRight, 0.2);
+	glVertex2f(clipAreaXRight, -0.2);
+	glVertex2f(clipAreaXRight - 0.01, -0.2);
+	glVertex2f(clipAreaXRight - 0.01, 0.2);
+	glEnd();
+}
+
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+	glPushMatrix();
 	glTranslatef(ballX, ballY, 0.0f);
 	drawBall();
+	glPopMatrix();
+	player1();
+	player2();
 	glutSwapBuffers();
 	if (ballY > ballYMax) {
 		ballY = ballYMax;
