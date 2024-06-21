@@ -34,10 +34,10 @@ bool trail = false;
 int ballMode = 1;
 
 using namespace std;
-void drawBall() {
+
+void drawTriangle() {
 	glPushMatrix();
 	glTranslatef(ballX, ballY, 0.0f);
-	glBegin(GL_TRIANGLE_FAN);
 	switch (ballColor)
 	{
 	case 1:
@@ -49,7 +49,56 @@ void drawBall() {
 	default:
 		glColor3f(1.0f, 1.0f, 1.0f);
 		break;
-	}	for (int i = 0; i <= 32; ++i) {
+	}
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex2f(0, 0);
+	glVertex2f(0.1, 0);
+	glVertex2f(0.05, 0.08);
+	glEnd();
+	glPopMatrix();
+}
+
+void drawRectangle() {
+	glPushMatrix();
+	glTranslatef(ballX, ballY, 0.0f);
+	switch (ballColor)
+	{
+	case 1:
+		glColor3f(0.0f, 0.0f, 1.0f);
+		break;
+	case 2:
+		glColor3f(1.0f, 0.0f, 0.0f);
+		break;
+	default:
+		glColor3f(1.0f, 1.0f, 1.0f);
+		break;
+	}
+	glBegin(GL_QUADS);
+	glVertex2f(0, 0);
+	glVertex2f(0.1, 0);
+	glVertex2f(0.1, 0.1);
+	glVertex2f(0, 0.1);
+	glEnd();
+	glPopMatrix();
+}
+
+void drawBall() {
+	glPushMatrix();
+	glTranslatef(ballX, ballY, 0.0f);
+	switch (ballColor)
+	{
+	case 1:
+		glColor3f(0.0f, 0.0f, 1.0f);
+		break;
+	case 2:
+		glColor3f(1.0f, 0.0f, 0.0f);
+		break;
+	default:
+		glColor3f(1.0f, 1.0f, 1.0f);
+		break;
+	}
+	glBegin(GL_TRIANGLE_FAN);
+	for (int i = 0; i <= 32; ++i) {
 		float angle = i * 2.0f * PI / 32;
 		glVertex2f(cos(angle) * ballRadius, sin(angle) * ballRadius);
 	}
@@ -123,7 +172,18 @@ void display() {
 	glColor3f(1.0, 1.0, 1.0);
 	sprintf_s(s, "%ld", player2Score);
 	renderBitmapString(0.5, 0.8, GLUT_BITMAP_TIMES_ROMAN_24, s);
-	drawBall();
+	switch (ballMode)
+	{
+	case 1:
+		drawBall();
+		break;
+	case 2:
+		drawTriangle();
+		break;
+	case 3:
+		drawRectangle();
+		break;
+	}
 	player1();
 	player2();
 	glutSwapBuffers();
@@ -197,6 +257,10 @@ void reshape(GLsizei width, GLsizei height)
 		clipAreaYTop = 1.0 / aspect;
 	}
 	gluOrtho2D(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
+	clipAreaXLeft += 0.05;
+	clipAreaXRight -= 0.05;
+	clipAreaYBottom += 0.05;
+	clipAreaYTop -= 0.3;
 	ballXMin = clipAreaXLeft + ballRadius;
 	ballXMax = clipAreaXRight - ballRadius;
 	ballYMin = clipAreaYBottom + ballRadius;
@@ -272,7 +336,7 @@ void idle() {
 	}
 }
 
-void menu(int item) 
+void menu(int item)
 {
 	switch (item)
 	{
@@ -307,9 +371,9 @@ void init()
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 
 	int subMenu = glutCreateMenu(menu);
-	glutAddMenuEntry("Default", 5);
-	glutAddMenuEntry("Red", 6);
-	glutAddMenuEntry("Green", 7);
+	glutAddMenuEntry("circle", 5);
+	glutAddMenuEntry("triangle", 6);
+	glutAddMenuEntry("rectangle", 7);
 
 	glutCreateMenu(menu);
 	glutAddSubMenu("Change ball", subMenu);
