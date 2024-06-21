@@ -26,6 +26,13 @@ int player1Color = 0;
 int player2Color = 0;
 int ballColor = 0;
 
+int player1Score = 0;
+int player2Score = 0;
+
+bool trail = false;
+
+int ballMode = 1;
+
 using namespace std;
 void drawBall() {
 	glPushMatrix();
@@ -97,10 +104,25 @@ void player2() {
 	glPopMatrix();
 }
 
+void renderBitmapString(float x, float y, void* font, const char* string) {
+	const char* c;
+	glRasterPos2f(x, y);
+	for (c = string; *c != '\0'; c++) {
+		glutBitmapCharacter(font, *c);
+	}
+}
+
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+	char s[10];
+	glColor3f(1.0, 1.0, 1.0);
+	sprintf_s(s, "%ld", player1Score);
+	renderBitmapString(-0.5, 0.8, GLUT_BITMAP_TIMES_ROMAN_24, s);
+	glColor3f(1.0, 1.0, 1.0);
+	sprintf_s(s, "%ld", player2Score);
+	renderBitmapString(0.5, 0.8, GLUT_BITMAP_TIMES_ROMAN_24, s);
 	drawBall();
 	player1();
 	player2();
@@ -123,6 +145,7 @@ void display() {
 			ballY = 0;
 			player1Color = 1;
 			player2Color = 2;
+			player1Score++;
 		}
 		else
 		{
@@ -138,6 +161,7 @@ void display() {
 			ballY = 0;
 			player2Color = 1;
 			player1Color = 2;
+			player2Score++;
 		}
 		else
 		{
@@ -183,11 +207,6 @@ void timer(int value)
 {
 	glutPostRedisplay();
 	glutTimerFunc(refreshMillis, timer, 0);
-}
-
-void init()
-{
-	glClearColor(0.0, 0.0, 0.0, 1.0);
 }
 
 void keyboard(unsigned char key, int x, int y) {
@@ -251,6 +270,55 @@ void idle() {
 			player2Y -= 0.0000005;
 		}
 	}
+}
+
+void menu(int item) 
+{
+	switch (item)
+	{
+	case 1:
+		xSpeed *= 2;
+		ySpeed *= 2;
+		break;
+	case 2:
+		xSpeed /= 2;
+		ySpeed /= 2;
+		break;
+	case 3:
+		trail = !trail;
+		break;
+	case 4:
+		exit(0);
+		break;
+	case 5:
+		ballMode = 1;
+		break;
+	case 6:
+		ballMode = 2;
+		break;
+	case 7:
+		ballMode = 3;
+		break;
+	}
+}
+
+void init()
+{
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+
+	int subMenu = glutCreateMenu(menu);
+	glutAddMenuEntry("Default", 5);
+	glutAddMenuEntry("Red", 6);
+	glutAddMenuEntry("Green", 7);
+
+	glutCreateMenu(menu);
+	glutAddSubMenu("Change ball", subMenu);
+	glutAddMenuEntry("speed up", 1);
+	glutAddMenuEntry("speed down", 2);
+	glutAddMenuEntry("trail", 3);
+	glutAddMenuEntry("Exit", 4);
+
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
 int main(int argc, char* argv[]) {
