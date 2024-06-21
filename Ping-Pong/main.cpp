@@ -29,81 +29,89 @@ int ballColor = 0;
 int player1Score = 0;
 int player2Score = 0;
 
-bool trail = false;
+int trail = 5;
 
 int ballMode = 1;
 
 using namespace std;
 
 void drawTriangle() {
-	glPushMatrix();
-	glTranslatef(ballX, ballY, 0.0f);
-	switch (ballColor)
+	for (size_t i = 0; i < trail; i++)
 	{
-	case 1:
-		glColor3f(0.0f, 0.0f, 1.0f);
-		break;
-	case 2:
-		glColor3f(1.0f, 0.0f, 0.0f);
-		break;
-	default:
-		glColor3f(1.0f, 1.0f, 1.0f);
-		break;
+		glPushMatrix();
+		glTranslatef(ballX - (i * xSpeed), ballY - (i * ySpeed), 0.0f);
+		switch (ballColor)
+		{
+		case 1:
+			glColor4f(0.0f, 0.0f, 1.0f, 1.0 / (i + 1));
+			break;
+		case 2:
+			glColor4f(1.0f, 0.0f, 0.0f, 1.0 / (i + 1));
+			break;
+		default:
+			glColor4f(1.0f, 1.0f, 1.0f, 1.0 / (i + 1));
+			break;
+		}
+		glBegin(GL_TRIANGLES);
+		glVertex2f(0, 0);
+		glVertex2f(0.1, 0);
+		glVertex2f(0.05, 0.08);
+		glEnd();
+		glPopMatrix();
 	}
-	glBegin(GL_TRIANGLE_FAN);
-	glVertex2f(0, 0);
-	glVertex2f(0.1, 0);
-	glVertex2f(0.05, 0.08);
-	glEnd();
-	glPopMatrix();
 }
 
 void drawRectangle() {
-	glPushMatrix();
-	glTranslatef(ballX, ballY, 0.0f);
-	switch (ballColor)
+	for (size_t i = 0; i < trail; i++)
 	{
-	case 1:
-		glColor3f(0.0f, 0.0f, 1.0f);
-		break;
-	case 2:
-		glColor3f(1.0f, 0.0f, 0.0f);
-		break;
-	default:
-		glColor3f(1.0f, 1.0f, 1.0f);
-		break;
+		glPushMatrix();
+		glTranslatef(ballX - (i * xSpeed), ballY - (i * ySpeed), 0.0f);
+		switch (ballColor)
+		{
+		case 1:
+			glColor4f(0.0f, 0.0f, 1.0f, 1.0 / (i + 1));
+			break;
+		case 2:
+			glColor4f(1.0f, 0.0f, 0.0f, 1.0 / (i + 1));
+			break;
+		default:
+			glColor4f(1.0f, 1.0f, 1.0f, 1.0 / (i + 1));
+			break;
+		}
+		glBegin(GL_QUADS);
+		glVertex2f(0, 0);
+		glVertex2f(0.1, 0);
+		glVertex2f(0.1, 0.1);
+		glVertex2f(0, 0.1);
+		glEnd();
+		glPopMatrix();
 	}
-	glBegin(GL_QUADS);
-	glVertex2f(0, 0);
-	glVertex2f(0.1, 0);
-	glVertex2f(0.1, 0.1);
-	glVertex2f(0, 0.1);
-	glEnd();
-	glPopMatrix();
 }
 
 void drawBall() {
-	glPushMatrix();
-	glTranslatef(ballX, ballY, 0.0f);
-	switch (ballColor)
-	{
-	case 1:
-		glColor3f(0.0f, 0.0f, 1.0f);
-		break;
-	case 2:
-		glColor3f(1.0f, 0.0f, 0.0f);
-		break;
-	default:
-		glColor3f(1.0f, 1.0f, 1.0f);
-		break;
+	for (size_t i = 0; i < trail; i++) {
+		glPushMatrix();
+		glTranslatef(ballX - (i * xSpeed), ballY - (i * ySpeed), 0.0f);
+		switch (ballColor)
+		{
+		case 1:
+			glColor4f(0.0f, 0.0f, 1.0f, 1.0 / (i + 1));
+			break;
+		case 2:
+			glColor4f(1.0f, 0.0f, 0.0f, 1.0 / (i + 1));
+			break;
+		default:
+			glColor4f(1.0f, 1.0f, 1.0f, 1.0 / (i + 1));
+			break;
+		}
+		glBegin(GL_TRIANGLE_FAN);
+		for (int i = 0; i <= 32; ++i) {
+			float angle = i * 2.0f * PI / 32;
+			glVertex2f(cos(angle) * ballRadius, sin(angle) * ballRadius);
+		}
+		glEnd();
+		glPopMatrix();
 	}
-	glBegin(GL_TRIANGLE_FAN);
-	for (int i = 0; i <= 32; ++i) {
-		float angle = i * 2.0f * PI / 32;
-		glVertex2f(cos(angle) * ballRadius, sin(angle) * ballRadius);
-	}
-	glEnd();
-	glPopMatrix();
 }
 
 void player1() {
@@ -124,8 +132,8 @@ void player1() {
 	}
 	glVertex2f(0, 0.2);
 	glVertex2f(0, -0.2);
-	glVertex2f(0.01, -0.2);
-	glVertex2f(0.01, 0.2);
+	glVertex2f(0.02, -0.2);
+	glVertex2f(0.02, 0.2);
 	glEnd();
 	glPopMatrix();
 }
@@ -147,8 +155,8 @@ void player2() {
 		break;
 	}	glVertex2f(0, 0.2);
 	glVertex2f(0, -0.2);
-	glVertex2f(0.01, -0.2);
-	glVertex2f(0.01, 0.2);
+	glVertex2f(0.02, -0.2);
+	glVertex2f(0.02, 0.2);
 	glEnd();
 	glPopMatrix();
 }
@@ -349,7 +357,14 @@ void menu(int item)
 		ySpeed /= 2;
 		break;
 	case 3:
-		trail = !trail;
+		if (trail == 1)
+		{
+			trail = 6;
+		}
+		else
+		{
+			trail = 1;
+		}
 		break;
 	case 4:
 		exit(0);
@@ -369,6 +384,8 @@ void menu(int item)
 void init()
 {
 	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
 
 	int subMenu = glutCreateMenu(menu);
 	glutAddMenuEntry("circle", 5);
@@ -387,7 +404,8 @@ void init()
 
 int main(int argc, char* argv[]) {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_ALPHA);
+	glEnable(GL_BLEND);
 	glutInitWindowSize(800, 600);
 	glutCreateWindow("Ping Pong");
 	init();
